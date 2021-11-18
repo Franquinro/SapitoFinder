@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="lista.js"></script>
+
+  <title>Equips SAP</title>
+  <style>
+    .bg-primary+.card-body {
+      background: #007bff33;
+    }
+
+    .bg-secondary+.card-body {
+      background: #6c757d33;
+    }
+
+    .mb-3 {
+      margin-bottom: .2em!important;
+    }
+
+    .jumbotron {
+      padding: 2rem 1rem !important;
+      margin-bottom: .2em!important;
+    }
+
+    #limpia,
+    #limpia2 {
+      margin-top: -.4rem;
+    }
+
+    .desc_mark {
+      background: #21252952;
+      display: inline-block;
+      border: 1px solid #f8f9fa63;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Start your code here -->
+  <div class="container">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-default">Descripción</span>
+      </div>
+      <input id="desc" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="Introduce + 2 letras">
+    </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-default"><a href="#" title="Consejo" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Puedes utilizar espacios para separar.<br>Ej. 'V1 A01 MVC'."><span class="badge badge-pill badge-info">?</span></a>&nbsp;Ubicación</span>
+      </div>
+      <input id="ubi" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="Completa ubicación" value="T8T-">
+    </div>
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="inputGroup-sizing-default">KKS</span>
+      </div>
+      <input id="kks" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="Introduce + 2 letras">
+      <div class="input-group-prepend">
+        <div class="input-group-text">
+          <input type="checkbox" name="criterios"> &nbsp;<span id="label_input">Resaltar</span>
+        </div>
+      </div>
+    </div>
+    <div id="buscando" class="d-flex justify-content-center" aria-hidden="true">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Buscando...</span>
+      </div>
+    </div>
+    <div id="resultados" class="alert alert-success"><strong id="encontrados"></strong> Equipos encontrados.<button id="limpia" type="button" class="btn btn-primary float-right">Limpiar</button></div>
+    <div id="sinresultados" class="alert alert-danger"> <strong>Sin resultados!</strong> Redefine los criterios de busqueda. <button id="limpia2" type="button" class="btn btn-primary float-right">Limpiar</button></div>
+    <div id="container">
+    </div>
+  </div>
+  <!-- End your code here -->
+  <script type="text/javascript">
+    // Write JavaScript here 
+    var res;
+
+    $('#buscando').attr('style', 'display: none !important');
+    $('#resultados').attr('style', 'display: none !important');
+    $('#sinresultados').attr('style', 'display: none !important');
+
+
+    $(document).ready(function() {
+
+      $('[data-toggle="popover"]').popover();
+
+      $("#label_input").click(function() {
+        $('input[name=criterios]').click();
+      });
+
+      $('input[name=criterios]').on('change', function() {
+        $("#desc").keyup();
+      });
+
+      $("#limpia").click(function() {
+        $("#desc").val('');
+        $("#ubi").val('T8T-');
+        $("#kks").val('');
+        $('#container').html("");
+        $('#resultados').attr('style', 'display: none !important');
+        $('#sinresultados').attr('style', 'display: none !important');
+      });
+      $("#limpia2").click(function() {
+        $("#limpia").click();
+      });
+    });
+
+
+
+    $("#ubi").keydown(function(e) {
+      var oldvalue = $(this).val();
+      var field = this;
+      setTimeout(function() {
+        if (field.value.indexOf('T8T-') !== 0) {
+          $(field).val(oldvalue);
+        }
+      }, 1);
+    });
+
+    $("#desc").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+      var raiz = "equipos";
+      var filtroDesc = "";
+      var filtroUbi = "";
+      var filtroKks = ""
+      if ($('#desc').val().length > 2) {
+        var texto = $('#desc').val();
+        texto = texto.trim();
+        var filTxt = texto.split(" ");
+        for (var f in filTxt) {
+          filtroDesc += ((filTxt[f] != "") ? "." : "") + ((filTxt[f] != "") ? "filter(equipo=>equipo.Denominacion.includes('" + filTxt[f] + "'))" : "");
+        }
+
+      }
+
+      if ($('#kks').val().length > 2) {
+        var texto = $('#kks').val();
+        var filTxt = texto.split(" ");
+        for (var f in filTxt) {
+          filtroKks += ((filTxt[f] != "") ? "." : "") + ((filTxt[f] != "") ? "filter(equipo=>equipo.KKS.includes('" + filTxt[f] + "'))" : "");
+        }
+
+      }
+
+      if ($('#ubi').val().length > 4) {
+        var texto = $('#ubi').val();
+        var filTxt = texto.split(" ");
+        for (var f in filTxt) {
+          filtroUbi += ((filTxt[f] != "") ? "." : "") + ((filTxt[f] != "") ? "filter(equipo=>equipo.Ubica.includes('" + filTxt[f] + "'))" : "");
+        }
+
+      }
+      if (filtroDesc.length > 2 || filtroUbi.length > 4 || filtroKks.length > 2) {
+        //$('#buscando').attr('style', 'display: block');
+        clearTimeout(res);
+        res = setTimeout(() => {
+          resultados(raiz + filtroDesc + filtroUbi + filtroKks);
+        }, 2000);
+      }
+      if (!($('#desc').val().length > 2) && !($('#ubi').val().length > 4) && !($('#kks').val().length > 2)) {
+        document.getElementById('container').innerHTML = "";
+      }
+    });
+
+    $("#kks").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+      $("#desc").keyup();
+    });
+
+    $("#ubi").keyup(function() {
+      $(this).val($(this).val().toUpperCase());
+      $("#desc").keyup();
+    });
+
+    function resultados(filtros) {
+      $('#buscando').attr('style', 'display: block');
+      var rows = eval(filtros);
+      //var rows = equipos.filter(equipo=>equipo.Denominacion.includes('BOM')).filter(equipo=>equipo.Denominacion.includes('LUB'));
+      if (rows.length > 0) {
+        var html = '';
+        for (var i = 0; i < rows.length; i++) {
+          html += '<div class="card" style="margin-bottom: .3em;">';
+          html += '<div class="card-header' + ((i % 2 == 0) ? ' bg-primary text-white' : ' bg-secondary text-white') + '">' + rows[i]["Denominacion"] + '</div>';
+          html += '<div class="card-body">' + rows[i]["Equipo"] + '<br>';
+          html += rows[i]["Ubica"];
+          html += ((rows[i]["KKS"] != "") ? '<br>' + rows[i]["KKS"] : '');
+          html += '</div></div>';
+        }
+
+
+        if ($('input[name=criterios]')[0].checked) {
+          if ($('#desc').val().length > 2) {
+            var texto = $('#desc').val();
+            var filTxt = texto.split(" ");
+            for (var f in filTxt) {
+              var re = new RegExp("(" + filTxt[f] + ")", 'gm');
+              var subst = `<div class="desc_mark">$1</div>`;
+              html = html.replace(re, subst);
+            }
+          }
+          if ($('#kks').val().length > 2) {
+            var texto = $('#kks').val();
+            var filTxt = texto.split(" ");
+            for (var f in filTxt) {
+              var re = new RegExp("(" + filTxt[f] + ")", 'gm');
+              var subst = `<div class="desc_mark">$1</div>`;
+              html = html.replace(re, subst);
+            }
+          }
+
+        }
+        $('#sinresultados').attr('style', 'display: none !important');
+        $('#resultados').attr('style', 'display: block');
+        $('#encontrados').text(rows.length);
+        document.getElementById('container').innerHTML = html;
+        //document.getElementById('contador').innerHTML = rows.length;
+        $('#buscando').attr('style', 'display: none !important');
+      } else {
+        //document.getElementById('contador').innerHTML = rows.length;
+        $('#resultados').attr('style', 'display: none !important');
+        $('#sinresultados').attr('style', 'display: block');
+        html = '';
+        document.getElementById('container').innerHTML = html;
+        $('#buscando').attr('style', 'display: none !important');
+      }
+    }
+  </script>
+</body>
+
+</html>
