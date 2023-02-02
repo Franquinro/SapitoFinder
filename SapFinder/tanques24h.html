@@ -1,0 +1,107 @@
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 25px;
+        }
+
+        .demo-container {
+            width: 300px;
+            margin: auto;
+            margin: 10%2em;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background-color: rgba(5, 114, 206, 0.2);
+            width: 100%;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .progress-bar-value {
+            width: 100%;
+            height: 100%;
+            border-radius: 50px;
+            background-color: rgb(5, 114, 206);
+            animation: indeterminateAnimation 1s infinite linear;
+            transform-origin: 0% 50%;
+        }
+
+        #mensaje {
+            padding: 2em;
+            font-size: 1em;
+        }
+      
+      #mensaje>span{
+        font-size: 1em;
+      }
+      
+      #progreso {
+        font-weight: bold;
+      }
+
+        @keyframes indeterminateAnimation {
+            0% {
+                transform: translateX(0) scaleX(0);
+            }
+
+            40% {
+                transform: translateX(0) scaleX(0.4);
+            }
+
+            100% {
+                transform: translateX(100%) scaleX(0.5);
+            }
+        }
+    </style>
+    <script>
+        var textos = [
+            '<span class="badge bg-success"> Comparando </span> los datos de nivel con los de Jinamar ... ',
+            '<span class="badge bg-success"> Calibrando </span> el nivel para una mayor eficiencia ... ',
+            '<span class="badge bg-success"> Asegurando </span> la cantidad de combustible para la punta ... ',
+            '<span class="badge bg-success"> Evaluando </span> el poder calórico del combustible ... ',
+            '<span class="badge bg-success"> Comprobando </span> venteos de tanques limpios ... ',
+            '<span class="badge bg-success"> Comprimiendo </span> combustible para optimizar el almacenamiento ... ',
+            '<span class="badge bg-success"> Corrigiendo </span> la altura de tanques a nivel del mar ... ',
+            '<span class="badge bg-success"> Calibrando </span> el cero de la váscula de la central ... ',
+            '<span class="badge bg-success"> Intuyendo </span> niveles para el próximo sondeo de tanques ... ',
+            '<span class="badge bg-success"> Verificación </span> en 2 pasos para evitar correos de Juan Carlos ... "'
+        ];
+        var i = 0;
+        setInterval(function() {
+            document.getElementById("mensaje").innerHTML = textos[i];
+            i++;
+            if (i == textos.length) i = 0;
+        }, 5000);
+
+        function progreso(html) {
+            console.log(html);
+            document.getElementById("progreso").innerHTML = html;
+        }
+    </script>
+</head>
+
+<body translate="no">
+    <div class="container">
+        <div id="mensaje" class="mt-4 p-3 bg-dark text-white rounded"><span class="badge bg-success"> Verificando </span> protocolos de combustibles fosiles ...</div>
+        <div class="demo-container">
+            <div class="progress-bar">
+                <div class="progress-bar-value"></div>
+            </div>
+        </div>
+        <div id="progreso" class="mt-4 p-3 bg-light rounded">Cargando datos desde el PI</div>
+    </div>
+</body>
+
+</html>
