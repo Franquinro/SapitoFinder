@@ -69,18 +69,29 @@
         }
     </style>
     <script>
+        function shuffleArray(array) {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        }
+
         var textos = [
             '<span class="badge bg-success"> <i class="fa-solid fa-code-compare"></i> Comparando </span> los datos de nivel con los de Jinamar ... ',
             '<span class="badge bg-success"> <i class="fa-solid fa-sliders"></i> Calibrando </span> el nivel para una mayor eficiencia ... ',
             '<span class="badge bg-success"> <i class="fa-solid fa-stamp"></i> Garantizando </span> la cantidad de combustible para la punta ... ',
             '<span class="badge bg-success"> <i class="fa-sharp fa-solid fa-microscope"></i> Evaluando </span> el poder calórico del combustible ... ',
-            '<span class="badge bg-success"> <i class="fa-sharp fa-solid fa-badge-check"></i> Comprobando </span> venteos de tanques limpios ... ',
-            '<span class="badge bg-success"> Comprimiendo </span> combustible para optimizar el almacenamiento ... ',
-            '<span class="badge bg-success"> Corrigiendo </span> la altura de tanques a nivel del mar ... ',
-            '<span class="badge bg-success"> Calibrando </span> el cero de la váscula de la central ... ',
-            '<span class="badge bg-success"> Intuyendo </span> niveles para el próximo sondeo de tanques ... ',
-            '<span class="badge bg-success"> Verificación </span> en 2 pasos para evitar correos de Juan Carlos ... "'
+            '<span class="badge bg-success"> <i class="fa-solid fa-badge-check"></i> Comprobando </span> venteos de tanques limpios ... ',
+            '<span class="badge bg-success"> <i class="fa-solid fa-minimize"></i> Comprimiendo </span> combustible para optimizar el almacenamiento ... ',
+            '<span class="badge bg-success"> <i class="fa-solid fa-wrench"></i> Corrigiendo </span> la altura de tanques a nivel del mar ... ',
+            '<span class="badge bg-success"> <i class="fa-solid fa-weight-hanging"></i> Calibrando </span> el cero de la váscula de la central ... ',
+            '<span class="badge bg-success"> <i class="fa-solid fa-crystal-ball"></i> Intuyendo </span> niveles para el próximo sondeo de tanques ... ',
+            '<span class="badge bg-success"> <i class="fa-solid fa-cloud-check"></i> Verificación </span> cuádruple para evitar correos de Juan Carlos ... "'
         ];
+        
+        textos = shuffleArray(textos);
+        
         var i = 0;
         setInterval(function() {
             document.getElementById("mensaje").innerHTML = textos[i];
@@ -97,7 +108,7 @@
 
 <body translate="no">
     <div class="container">
-        <div id="mensaje" class="mt-4 p-3 bg-dark text-white rounded"><span class="badge bg-success"> Verificando </span> protocolos de combustibles fosiles ...</div>
+        <div id="mensaje" class="mt-4 p-3 bg-dark text-white rounded"><span class="badge bg-success"> <i class="fa-solid fa-flask-vial"></i> Verificando </span> protocolos de combustibles fosiles ...</div>
         <div class="demo-container">
             <div class="progress-bar">
                 <div class="progress-bar-value"></div>
