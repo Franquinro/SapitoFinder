@@ -82,106 +82,78 @@
     </div>
   </div>
   <!-- End your code here -->
-  <script type="text/javascript">
-    // Write JavaScript here 
-    var res;
+<script type="text/javascript">
+  var res;
 
-    $('#buscando').attr('style', 'display: none !important');
-    $('#resultados').attr('style', 'display: none !important');
-    $('#sinresultados').attr('style', 'display: none !important');
+  $('#buscando').attr('style', 'display: none !important');
+  $('#resultados').attr('style', 'display: none !important');
+  $('#sinresultados').attr('style', 'display: none !important');
 
+  $(document).ready(function() {
+    $('[data-toggle="popover"]').popover();
 
-    $(document).ready(function() {
-
-      $('[data-toggle="popover"]').popover();
-
-      $("#label_input").click(function() {
-        $('input[name=criterios]').click();
-      });
-
-      $('input[name=criterios]').on('change', function() {
-        $("#desc").keyup();
-      });
-
-      $("#limpia").click(function() {
-        $("#desc").val('');
-        $("#ubi").val('T8T-');
-        $("#kks").val('');
-        $('#container').html("");
-        $('#resultados').attr('style', 'display: none !important');
-        $('#sinresultados').attr('style', 'display: none !important');
-      });
-      $("#limpia2").click(function() {
-        $("#limpia").click();
-      });
+    $("#label_input").click(function() {
+      $('input[name=criterios]').click();
     });
 
-
-
-    $("#ubi").keydown(function(e) {
-      var oldvalue = $(this).val();
-      var field = this;
-      setTimeout(function() {
-        if (field.value.indexOf('T8T-') !== 0) {
-          $(field).val(oldvalue);
-        }
-      }, 1);
-    });
-
-    $("#desc").keyup(function() {
-      $(this).val($(this).val().toUpperCase());
-      var raiz = "equipos";
-      var filtroDesc = "";
-      var filtroUbi = "";
-      var filtroKks = ""
-      if ($('#desc').val().length > 2) {
-        var texto = $('#desc').val();
-        texto = texto.trim();
-        var filTxt = texto.split(" ");
-        for (var f in filTxt) {
-          filtroDesc += ((filTxt[f] != "") ? "." : "") + ((filTxt[f] != "") ? "filter(equipo=>equipo.Denominacion.includes('" + filTxt[f] + "'))" : "");
-        }
-
-      }
-
-      if ($('#kks').val().length > 2) {
-        var texto = $('#kks').val();
-        var filTxt = texto.split(" ");
-        for (var f in filTxt) {
-          filtroKks += ((filTxt[f] != "") ? "." : "") + ((filTxt[f] != "") ? "filter(equipo=>equipo.KKS.includes('" + filTxt[f] + "'))" : "");
-        }
-
-      }
-
-      if ($('#ubi').val().length > 4) {
-        var texto = $('#ubi').val();
-        var filTxt = texto.split(" ");
-        for (var f in filTxt) {
-          filtroUbi += ((filTxt[f] != "") ? "." : "") + ((filTxt[f] != "") ? "filter(equipo=>equipo.Ubica.includes('" + filTxt[f] + "'))" : "");
-        }
-
-      }
-      if (filtroDesc.length > 2 || filtroUbi.length > 4 || filtroKks.length > 2) {
-        //$('#buscando').attr('style', 'display: block');
-        clearTimeout(res);
-        res = setTimeout(() => {
-          resultados(raiz + filtroDesc + filtroUbi + filtroKks);
-        }, 2000);
-      }
-      if (!($('#desc').val().length > 2) && !($('#ubi').val().length > 4) && !($('#kks').val().length > 2)) {
-        document.getElementById('container').innerHTML = "";
-      }
-    });
-
-    $("#kks").keyup(function() {
-      $(this).val($(this).val().toUpperCase());
+    $('input[name=criterios]').on('change', function() {
       $("#desc").keyup();
     });
 
-    $("#ubi").keyup(function() {
-      $(this).val($(this).val().toUpperCase());
-      $("#desc").keyup();
+    $("#limpia").click(function() {
+      $("#desc").val('');
+      $("#ubi").val('T8T-');
+      $("#kks").val('');
+      $('#container').html("");
+      $('#resultados').attr('style', 'display: none !important');
+      $('#sinresultados').attr('style', 'display: none !important');
     });
+
+    $("#limpia2").click(function() {
+      $("#limpia").click();
+    });
+  });
+
+  $("#ubi").keydown(function(e) {
+    var oldvalue = $(this).val();
+    var field = this;
+    setTimeout(function() {
+      if (field.value.indexOf('T8T-') !== 0) {
+        $(field).val(oldvalue);
+      }
+    }, 1);
+  });
+
+  function filtrarEquipos(descripcion, ubicacion, kks) {
+    return equipos.filter(function(equipo) {
+        var cumpleDescripcion = descripcion.length <= 2 || descripcion.split(' ').every((txt) => equipo.Denominacion.includes(txt));
+        var cumpleUbicacion = ubicacion.length <= 4 || ubicacion.split(' ').every((txt) => equipo.Ubica.includes(txt));
+        var cumpleKks = kks.length <= 2 || kks.split(' ').every((txt) => equipo.KKS.includes(txt));
+        return cumpleDescripcion && cumpleUbicacion && cumpleKks;
+    });
+  }
+
+  function handleKeyUp() {
+    var descripcion = $('#desc').val().toUpperCase().trim();
+    var ubicacion = $('#ubi').val().toUpperCase().trim();
+    var kks = $('#kks').val().toUpperCase().trim();
+    var rows = filtrarEquipos(descripcion, ubicacion, kks);
+
+    if (descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2) {
+      clearTimeout(res);
+      res = setTimeout(() => {
+        resultados(rows);
+      }, 2000);
+    }
+
+    if (!(descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2)) {
+      document.getElementById('container').innerHTML = "";
+    }
+  }
+
+  $("#desc").keyup(handleKeyUp);
+  $("#kks").keyup(handleKeyUp);
+  $("#ubi").keyup(handleKeyUp);
 
     function resultados(filtros) {
       $('#buscando').attr('style', 'display: block');
