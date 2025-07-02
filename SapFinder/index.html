@@ -85,6 +85,23 @@
   $(document).ready(function () {
     $.getJSON("listado_equipos_mayo_2025.json", function (data) {
       equipos = data;
+
+      // Activar buscadores solo cuando los datos están cargados
+      $("#desc, #kks, #ubi").keyup(function () {
+        var descripcion = $('#desc').val().toUpperCase().trim();
+        var ubicacion = $('#ubi').val().toUpperCase().trim();
+        var kks = $('#kks').val().toUpperCase().trim();
+
+        if (descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2) {
+          $('#buscando').show();
+          setTimeout(() => {
+            mostrarResultados(filtrarEquipos(descripcion, ubicacion, kks));
+          }, 500);
+        } else {
+          $('#container').html('');
+          $('#buscando').hide();
+        }
+      });
     });
 
     $('[data-toggle="popover"]').popover();
