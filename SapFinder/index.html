@@ -11,84 +11,48 @@
   <title>SapitoFinder 🔍</title>
 
   <style>
-    /* Estilo general para un look más limpio */
-    body {
-      background-color: #f8f9fa; /* Un gris muy claro de fondo */
-    }
-
-    /* Contenedor principal con sombra y bordes redondeados */
+    body { background-color: #f8f9fa; }
     main.container {
       max-width: 800px;
       background-color: white;
       border-radius: 0.5rem;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
-
-    /* Estilo para el Popover de ayuda */
-    .popover-header {
-        font-weight: bold;
-    }
-
-    /* Contenedor de resultados con espaciado entre tarjetas */
-    #results-container {
-      display: grid;
-      gap: 0.75rem; /* Espacio entre las tarjetas */
-    }
-    
-    /* Estilo para las tarjetas de resultado */
+    .popover-header { font-weight: bold; }
+    #results-container { display: grid; gap: 0.75rem; }
     .result-card {
       border: none;
       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
-    
     .result-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
-
-    /* Colores alternos para las cabeceras de las tarjetas */
-    .result-card:nth-child(odd) .card-header {
-      background-color: #0d6efd; /* Primary de Bootstrap */
-      color: white;
-    }
-
-    .result-card:nth-child(even) .card-header {
-      background-color: #6c757d; /* Secondary de Bootstrap */
-      color: white;
-    }
-
-    /* Estilo para el texto resaltado */
-    mark {
-      background-color: #fdff85;
-      padding: 0.1em 0.2em;
-      border-radius: 3px;
-    }
+    .result-card:nth-child(odd) .card-header { background-color: #0d6efd; color: white; }
+    .result-card:nth-child(even) .card-header { background-color: #6c757d; color: white; }
+    mark { background-color: #fdff85; padding: 0.1em 0.2em; border-radius: 3px; }
   </style>
 </head>
 
 <body>
   <main class="container p-4 my-4">
-    <!-- Encabezado -->
     <div class="text-center mb-4">
       <h1 class="display-5">SapitoFinder 🔍</h1>
       <p class="lead text-muted">Buscador de equipos y componentes</p>
     </div>
 
-    <!-- Formulario de Búsqueda -->
     <form id="search-form" onsubmit="return false;">
       <div class="row g-2 mb-3">
-        <!-- Input Descripción -->
         <div class="col-md">
           <div class="form-floating">
-            <input type="text" class="form-control" id="desc" placeholder="Introduce + 2 letras">
+            <input type="text" class="form-control" id="desc" placeholder="Introduce + 2 letras" disabled>
             <label for="desc">Descripción</label>
           </div>
         </div>
-        <!-- Input Ubicación -->
         <div class="col-md">
           <div class="form-floating">
-            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-">
+            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-" disabled>
             <label for="ubi">Ubicación 
               <a href="#" tabindex="0" class="text-decoration-none" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-title="Consejo de Búsqueda" data-bs-content="Puedes usar espacios para buscar múltiples términos. Ej: 'V1 A01 MVC'">
                 <i class="bi bi-info-circle"></i>
@@ -96,36 +60,31 @@
             </label>
           </div>
         </div>
-        <!-- Input KKS -->
         <div class="col-md">
           <div class="form-floating">
-            <input type="text" class="form-control" id="kks" placeholder="Introduce + 2 letras">
+            <input type="text" class="form-control" id="kks" placeholder="Introduce + 2 letras" disabled>
             <label for="kks">KKS / Nº Pieza</label>
           </div>
         </div>
       </div>
       
-      <!-- Opciones y Botones -->
       <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="highlight-criteria">
+          <input class="form-check-input" type="checkbox" role="switch" id="highlight-criteria" disabled>
           <label class="form-check-label" for="highlight-criteria">Resaltar criterios</label>
         </div>
-        <button id="clear-button" type="button" class="btn btn-outline-secondary">Limpiar</button>
+        <button id="clear-button" type="button" class="btn btn-outline-secondary" disabled>Limpiar</button>
       </div>
     </form>
 
-    <!-- Indicador de Carga (Spinner) -->
     <div id="searching-spinner" class="text-center my-4" style="display:none;">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Buscando...</span>
       </div>
     </div>
 
-    <!-- Mensaje de Resultados -->
     <div id="results-feedback" class="alert" role="alert" style="display:none;"></div>
     
-    <!-- Contenedor para los resultados -->
     <div id="results-container"></div>
   </main>
 
@@ -135,15 +94,15 @@
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <!-- Bootstrap 5.3.2 JS Bundle (incluye Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95oG4sF8sL2ReYImL3pB1YcNl8xFNcJoAnx" crossorigin="anonymous"></script>
+  
+  <!-- LÍNEA CORREGIDA: Bootstrap 5.3.2 JS Bundle con el hash de integridad correcto -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
   <script>
     $(document).ready(function() {
       let equipos = [];
       let debounceTimer;
 
-      // Cache de elementos del DOM para mejor rendimiento
       const $desc = $('#desc');
       const $ubi = $('#ubi');
       const $kks = $('#kks');
@@ -152,45 +111,47 @@
       const $feedback = $('#results-feedback');
       const $container = $('#results-container');
       const $clearBtn = $('#clear-button');
-
-      // Inicializar Popovers de Bootstrap 5
+      
+      // Habilitar controles del formulario
+      const enableForm = (enable) => {
+        $('input.form-control, #highlight-criteria, #clear-button').prop('disabled', !enable);
+      };
+      
+      // Inicializar Popovers (ahora funcionará porque bootstrap está definido)
       const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
       popoverTriggerList.map(function (popoverTriggerEl) {
           return new bootstrap.Popover(popoverTriggerEl);
       });
 
       // Cargar los datos del JSON
+      $feedback.removeClass().addClass('alert alert-info').text('Cargando datos de equipos...').show();
       $.getJSON("listado_equipos_mayo_2025.json")
         .done(function(data) {
           equipos = data;
-          // Habilitar los campos de búsqueda una vez que los datos están listos
-          $('input.form-control').prop('disabled', false);
+          enableForm(true); // Habilitar el formulario
+          $feedback.hide();
+          $desc.focus();
         })
         .fail(function() {
-          $feedback.removeClass().addClass('alert alert-danger').text('Error: No se pudo cargar el archivo de datos.').show();
+          enableForm(false);
+          $feedback.removeClass().addClass('alert alert-danger').text('Error: No se pudo cargar el archivo de datos. Por favor, recarga la página.').show();
         });
 
-      // --- FUNCIONES PRINCIPALES ---
-
-      // Función que se ejecuta al buscar
       const performSearch = () => {
         const descripcion = $desc.val().toUpperCase().trim();
         const ubicacion = $ubi.val().toUpperCase().trim();
         const kks = $kks.val().toUpperCase().trim();
 
-        // Condición para iniciar la búsqueda
         if (descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2) {
           $spinner.show();
           $container.hide();
           $feedback.hide();
-
-          // Simula una pequeña demora para que el spinner sea visible
+          
           setTimeout(() => {
             const resultados = filtrarEquipos(descripcion, ubicacion, kks);
             mostrarResultados(resultados);
           }, 250);
         } else {
-          // Si no se cumplen los criterios, limpiar la pantalla
           limpiarResultados();
         }
       };
@@ -209,7 +170,7 @@
       };
 
       const mostrarResultados = (resultados) => {
-        $spinner.hide(); // Ocultar el spinner ANTES de mostrar resultados
+        $spinner.hide();
         limpiarResultados();
 
         if (resultados.length > 0) {
@@ -226,7 +187,6 @@
             </div>
           `).join('');
 
-          // Resaltar si la opción está activa
           if ($highlight.is(':checked')) {
             const terminos = [...$desc.val().split(' '), ...$kks.val().split(' ')].filter(t => t.length > 2);
             if (terminos.length > 0) {
@@ -255,28 +215,19 @@
         $desc.focus();
       };
       
-      // --- MANEJADORES DE EVENTOS ---
-
-      // Evento unificado para los campos de texto con "debounce"
       $desc.add($ubi).add($kks).on('keyup', () => {
         clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(performSearch, 300); // Espera 300ms después de la última tecla
+        debounceTimer = setTimeout(performSearch, 300);
       });
       
-      // Evento para el interruptor de resaltar
       $highlight.on('change', performSearch);
       
-      // Evento para el botón de limpiar
       $clearBtn.on('click', limpiarFormulario);
 
-      // Prevenir que la ubicación se escriba sin el prefijo 'T8T-'
-      $ubi.on('keydown', function(e) {
-        const oldValue = $(this).val();
-        setTimeout(() => {
-          if (this.value.indexOf('T8T-') !== 0) {
-            $(this).val(oldValue);
-          }
-        }, 1);
+      $ubi.on('input', function() {
+        if (!this.value.startsWith('T8T-')) {
+            this.value = 'T8T-';
+        }
       });
     });
   </script>
