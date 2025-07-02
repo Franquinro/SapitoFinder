@@ -1,201 +1,284 @@
-
 <!DOCTYPE html>
-<html>
-
+<html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Bootstrap 5.3.2 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <!-- Iconos de Bootstrap para el popover -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
   <title>SapitoFinder 🔍</title>
+
   <style>
-    .bg-primary+.card-body {
-      background: #007bff33;
+    /* Estilo general para un look más limpio */
+    body {
+      background-color: #f8f9fa; /* Un gris muy claro de fondo */
     }
 
-    .bg-secondary+.card-body {
-      background: #6c757d33;
+    /* Contenedor principal con sombra y bordes redondeados */
+    main.container {
+      max-width: 800px;
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
 
-    .mb-3 {
-      margin-bottom: .2em!important;
+    /* Estilo para el Popover de ayuda */
+    .popover-header {
+        font-weight: bold;
     }
 
-    .jumbotron {
-      padding: 2rem 1rem !important;
-      margin-bottom: .2em!important;
+    /* Contenedor de resultados con espaciado entre tarjetas */
+    #results-container {
+      display: grid;
+      gap: 0.75rem; /* Espacio entre las tarjetas */
+    }
+    
+    /* Estilo para las tarjetas de resultado */
+    .result-card {
+      border: none;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    
+    .result-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
 
-    #limpia,
-    #limpia2 {
-      margin-top: -.4rem;
+    /* Colores alternos para las cabeceras de las tarjetas */
+    .result-card:nth-child(odd) .card-header {
+      background-color: #0d6efd; /* Primary de Bootstrap */
+      color: white;
     }
 
-    .desc_mark {
-      background: #21252952;
-      display: inline-block;
-      border: 1px solid #f8f9fa63;
-      border-radius: 2px;
+    .result-card:nth-child(even) .card-header {
+      background-color: #6c757d; /* Secondary de Bootstrap */
+      color: white;
+    }
+
+    /* Estilo para el texto resaltado */
+    mark {
+      background-color: #fdff85;
+      padding: 0.1em 0.2em;
+      border-radius: 3px;
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    ©FQR©<br>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroup-sizing-default">Descripción</span>
-      </div>
-      <input id="desc" type="text" class="form-control" placeholder="Introduce + 2 letras">
+  <main class="container p-4 my-4">
+    <!-- Encabezado -->
+    <div class="text-center mb-4">
+      <h1 class="display-5">SapitoFinder 🔍</h1>
+      <p class="lead text-muted">Buscador de equipos y componentes</p>
     </div>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text"><a href="#" title="Consejo" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Puedes utilizar espacios para separar.<br>Ej. 'V1 A01 MVC'."><span class="badge badge-pill badge-info">?</span></a>&nbsp;Ubicación</span>
-      </div>
-      <input id="ubi" type="text" class="form-control" placeholder="Completa ubicación" value="T8T-">
-    </div>
-    <div class="input-group mb-3">
-      <div class="input-group-prepend">
-        <span class="input-group-text">KKS</span>
-      </div>
-      <input id="kks" type="text" class="form-control" placeholder="Introduce + 2 letras">
-      <div class="input-group-prepend">
-        <div class="input-group-text">
-          <input type="checkbox" name="criterios"> &nbsp;<span id="label_input">Resaltar</span>
+
+    <!-- Formulario de Búsqueda -->
+    <form id="search-form" onsubmit="return false;">
+      <div class="row g-2 mb-3">
+        <!-- Input Descripción -->
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" class="form-control" id="desc" placeholder="Introduce + 2 letras">
+            <label for="desc">Descripción</label>
+          </div>
+        </div>
+        <!-- Input Ubicación -->
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-">
+            <label for="ubi">Ubicación 
+              <a href="#" tabindex="0" class="text-decoration-none" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-title="Consejo de Búsqueda" data-bs-content="Puedes usar espacios para buscar múltiples términos. Ej: 'V1 A01 MVC'">
+                <i class="bi bi-info-circle"></i>
+              </a>
+            </label>
+          </div>
+        </div>
+        <!-- Input KKS -->
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" class="form-control" id="kks" placeholder="Introduce + 2 letras">
+            <label for="kks">KKS / Nº Pieza</label>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="buscando" class="d-flex justify-content-center" aria-hidden="true" style="display:none!important;">
-      <div class="spinner-border" role="status">
-        <span class="sr-only">Buscando...</span>
+      
+      <!-- Opciones y Botones -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="highlight-criteria">
+          <label class="form-check-label" for="highlight-criteria">Resaltar criterios</label>
+        </div>
+        <button id="clear-button" type="button" class="btn btn-outline-secondary">Limpiar</button>
+      </div>
+    </form>
+
+    <!-- Indicador de Carga (Spinner) -->
+    <div id="searching-spinner" class="text-center my-4" style="display:none;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Buscando...</span>
       </div>
     </div>
-    <div id="resultados" class="alert alert-success" style="display:none!important;"><strong id="encontrados"></strong> Equipos encontrados.<button id="limpia" type="button" class="btn btn-primary float-right">Limpiar</button></div>
-    <div id="sinresultados" class="alert alert-danger" style="display:none!important;"> <strong>Sin resultados!</strong> Redefine los criterios de búsqueda. <button id="limpia2" type="button" class="btn btn-primary float-right">Limpiar</button></div>
-    <div id="container"></div>
-  </div>
 
-<script type="text/javascript">
-  var equipos = [];
+    <!-- Mensaje de Resultados -->
+    <div id="results-feedback" class="alert" role="alert" style="display:none;"></div>
+    
+    <!-- Contenedor para los resultados -->
+    <div id="results-container"></div>
+  </main>
 
-  $(document).ready(function () {
-    $.getJSON("listado_equipos_mayo_2025.json", function (data) {
-      equipos = data;
+  <footer class="text-center text-muted py-3">
+    <small>©FQR©</small>
+  </footer>
 
-      // Activar buscadores solo cuando los datos están cargados
-      $("#desc, #kks, #ubi").keyup(function () {
-        var descripcion = $('#desc').val().toUpperCase().trim();
-        var ubicacion = $('#ubi').val().toUpperCase().trim();
-        var kks = $('#kks').val().toUpperCase().trim();
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <!-- Bootstrap 5.3.2 JS Bundle (incluye Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95oG4sF8sL2ReYImL3pB1YcNl8xFNcJoAnx" crossorigin="anonymous"></script>
 
+  <script>
+    $(document).ready(function() {
+      let equipos = [];
+      let debounceTimer;
+
+      // Cache de elementos del DOM para mejor rendimiento
+      const $desc = $('#desc');
+      const $ubi = $('#ubi');
+      const $kks = $('#kks');
+      const $highlight = $('#highlight-criteria');
+      const $spinner = $('#searching-spinner');
+      const $feedback = $('#results-feedback');
+      const $container = $('#results-container');
+      const $clearBtn = $('#clear-button');
+
+      // Inicializar Popovers de Bootstrap 5
+      const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+      popoverTriggerList.map(function (popoverTriggerEl) {
+          return new bootstrap.Popover(popoverTriggerEl);
+      });
+
+      // Cargar los datos del JSON
+      $.getJSON("listado_equipos_mayo_2025.json")
+        .done(function(data) {
+          equipos = data;
+          // Habilitar los campos de búsqueda una vez que los datos están listos
+          $('input.form-control').prop('disabled', false);
+        })
+        .fail(function() {
+          $feedback.removeClass().addClass('alert alert-danger').text('Error: No se pudo cargar el archivo de datos.').show();
+        });
+
+      // --- FUNCIONES PRINCIPALES ---
+
+      // Función que se ejecuta al buscar
+      const performSearch = () => {
+        const descripcion = $desc.val().toUpperCase().trim();
+        const ubicacion = $ubi.val().toUpperCase().trim();
+        const kks = $kks.val().toUpperCase().trim();
+
+        // Condición para iniciar la búsqueda
         if (descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2) {
-          $('#buscando').show();
+          $spinner.show();
+          $container.hide();
+          $feedback.hide();
+
+          // Simula una pequeña demora para que el spinner sea visible
           setTimeout(() => {
-            mostrarResultados(filtrarEquipos(descripcion, ubicacion, kks));
-          }, 500);
+            const resultados = filtrarEquipos(descripcion, ubicacion, kks);
+            mostrarResultados(resultados);
+          }, 250);
         } else {
-          $('#container').html('');
-          $('#buscando').hide();
+          // Si no se cumplen los criterios, limpiar la pantalla
+          limpiarResultados();
         }
+      };
+
+      const filtrarEquipos = (descripcion, ubicacion, kks) => {
+        const descTerms = descripcion.split(' ').filter(Boolean);
+        const ubiTerms = ubicacion.split(' ').filter(Boolean);
+        const kksTerms = kks.split(' ').filter(Boolean);
+        
+        return equipos.filter(equipo => {
+          const cumpleDescripcion = descripcion.length <= 2 || descTerms.every(term => equipo["Denominación"].toUpperCase().includes(term));
+          const cumpleUbicacion = ubicacion.length <= 4 || ubiTerms.every(term => (equipo["Ubicac.técnica"] || "").toUpperCase().includes(term));
+          const cumpleKks = kks.length <= 2 || kksTerms.every(term => (equipo["NºPieza fabric."] || "").toUpperCase().includes(term));
+          return cumpleDescripcion && cumpleUbicacion && cumpleKks;
+        });
+      };
+
+      const mostrarResultados = (resultados) => {
+        $spinner.hide(); // Ocultar el spinner ANTES de mostrar resultados
+        limpiarResultados();
+
+        if (resultados.length > 0) {
+          $feedback.removeClass().addClass('alert alert-success').html(`<strong>${resultados.length}</strong> equipos encontrados.`).show();
+          
+          let html = resultados.map(equipo => `
+            <div class="card result-card">
+              <div class="card-header fw-bold">${equipo["Denominación"]}</div>
+              <div class="card-body">
+                <p class="mb-1"><strong>Equipo:</strong> ${equipo["Equipo"]}</p>
+                <p class="mb-1"><strong>Ubicación:</strong> ${equipo["Ubicac.técnica"]}</p>
+                ${equipo["NºPieza fabric."] ? `<p class="mb-0"><strong>KKS:</strong> ${equipo["NºPieza fabric."]}</p>` : ''}
+              </div>
+            </div>
+          `).join('');
+
+          // Resaltar si la opción está activa
+          if ($highlight.is(':checked')) {
+            const terminos = [...$desc.val().split(' '), ...$kks.val().split(' ')].filter(t => t.length > 2);
+            if (terminos.length > 0) {
+              const regex = new RegExp(`(${terminos.join('|')})`, 'gi');
+              html = html.replace(regex, `<mark>$1</mark>`);
+            }
+          }
+          
+          $container.html(html).show();
+        } else {
+          $feedback.removeClass().addClass('alert alert-warning').html('<strong>Sin resultados.</strong> Prueba con otros criterios de búsqueda.').show();
+        }
+      };
+
+      const limpiarResultados = () => {
+        $container.empty().hide();
+        $feedback.hide();
+      };
+
+      const limpiarFormulario = () => {
+        $desc.val('');
+        $ubi.val('T8T-');
+        $kks.val('');
+        limpiarResultados();
+        $spinner.hide();
+        $desc.focus();
+      };
+      
+      // --- MANEJADORES DE EVENTOS ---
+
+      // Evento unificado para los campos de texto con "debounce"
+      $desc.add($ubi).add($kks).on('keyup', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(performSearch, 300); // Espera 300ms después de la última tecla
+      });
+      
+      // Evento para el interruptor de resaltar
+      $highlight.on('change', performSearch);
+      
+      // Evento para el botón de limpiar
+      $clearBtn.on('click', limpiarFormulario);
+
+      // Prevenir que la ubicación se escriba sin el prefijo 'T8T-'
+      $ubi.on('keydown', function(e) {
+        const oldValue = $(this).val();
+        setTimeout(() => {
+          if (this.value.indexOf('T8T-') !== 0) {
+            $(this).val(oldValue);
+          }
+        }, 1);
       });
     });
-
-    $('[data-toggle="popover"]').popover();
-
-    $("#label_input").click(function () {
-      $('input[name=criterios]').click();
-    });
-
-    $('input[name=criterios]').on('change', function () {
-      $("#desc").keyup();
-    });
-
-    $("#limpia").click(function () {
-      $("#desc").val('');
-      $("#ubi").val('T8T-');
-      $("#kks").val('');
-      $('#container').html("");
-      $('#resultados').hide();
-      $('#sinresultados').hide();
-    });
-
-    $("#limpia2").click(function () {
-      $("#limpia").click();
-    });
-
-    $("#ubi").keydown(function (e) {
-      var oldvalue = $(this).val();
-      var field = this;
-      setTimeout(function () {
-        if (field.value.indexOf('T8T-') !== 0) {
-          $(field).val(oldvalue);
-        }
-      }, 1);
-    });
-
-    $("#desc, #kks, #ubi").keyup(function () {
-      var descripcion = $('#desc').val().toUpperCase().trim();
-      var ubicacion = $('#ubi').val().toUpperCase().trim();
-      var kks = $('#kks').val().toUpperCase().trim();
-      if (descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2) {
-        $('#buscando').show();
-        setTimeout(() => {
-          mostrarResultados(filtrarEquipos(descripcion, ubicacion, kks));
-        }, 1000);
-      } else {
-        $('#container').html('');
-      }
-    });
-  });
-
-  function filtrarEquipos(descripcion, ubicacion, kks) {
-    return equipos.filter(function (equipo) {
-      var cumpleDescripcion = descripcion.length <= 2 || descripcion.split(' ').every(txt => equipo["Denominación"].toUpperCase().includes(txt));
-      var cumpleUbicacion = ubicacion.length <= 4 || ubicacion.split(' ').every(txt => (equipo["Ubicac.técnica"] || "").toUpperCase().includes(txt));
-      var cumpleKks = kks.length <= 2 || kks.split(' ').every(txt => (equipo["NºPieza fabric."] || "").toUpperCase().includes(txt));
-      return cumpleDescripcion && cumpleUbicacion && cumpleKks;
-    });
-  }
-
-  function mostrarResultados(filtros) {
-    $('#buscando').hide();
-    if (filtros.length > 0) {
-      var html = '';
-      for (var i = 0; i < filtros.length; i++) {
-        html += '<div class="card" style="margin-bottom: .3em;">';
-        html += '<div class="card-header' + ((i % 2 == 0) ? ' bg-primary text-white' : ' bg-secondary text-white') + '">' + filtros[i]["Denominación"] + '</div>';
-        html += '<div class="card-body">' + filtros[i]["Equipo"] + '<br>' + filtros[i]["Ubicac.técnica"];
-        if (filtros[i]["NºPieza fabric."]) html += '<br>' + filtros[i]["NºPieza fabric."];
-        html += '</div></div>';
-      }
-
-      if ($('input[name=criterios]')[0].checked) {
-        ["desc", "kks"].forEach(id => {
-          var texto = $('#' + id).val();
-          if (texto.length > 2) {
-            texto.split(" ").forEach(txt => {
-              var re = new RegExp("(" + txt + ")", 'gi');
-              html = html.replace(re, `<div class="desc_mark">$1</div>`);
-            });
-          }
-        });
-      }
-
-      $('#sinresultados').hide();
-      $('#resultados').show();
-      $('#encontrados').text(filtros.length);
-      $('#container').html(html);
-    } else {
-      $('#resultados').hide();
-      $('#sinresultados').show();
-      $('#container').html('');
-    }
-  }
-</script>
+  </script>
 </body>
-
 </html>
