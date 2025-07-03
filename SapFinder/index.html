@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <!-- Bootstrap 5.3.2 CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <!-- Iconos de Bootstrap para el popover -->
@@ -26,8 +27,8 @@
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
     .result-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
     .result-card:nth-child(odd) .card-header { background-color: #0d6efd; color: white; }
     .result-card:nth-child(even) .card-header { background-color: #6c757d; color: white; }
@@ -39,30 +40,55 @@
   <main class="container p-4 my-4">
     <div class="text-center mb-4">
       <h1 class="display-5 d-inline-flex align-items-center">
-        SapitoFinder 
+        SapitoFinder
         <img src="android-chrome-192x192.png" alt="Icono SapitoFinder" style="height: 6.0rem; margin-left: 0.75rem;">
       </h1>
       <p class="lead text-muted">Buscador de equipos y componentes</p>
     </div>
 
+    <!-- ========= FORMULARIO ========= -->
     <form id="search-form" onsubmit="return false;">
+      <!-- Fila de filtros -->
       <div class="row g-2 mb-3">
+        <!-- Descripción -->
         <div class="col-md">
           <div class="form-floating">
             <input type="text" class="form-control" id="desc" placeholder="Introduce + 2 letras" disabled>
             <label for="desc">Descripción</label>
           </div>
         </div>
+
+        <!-- Ubicación (con popover) -->
         <div class="col-md">
-          <div class="form-floating">
-            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-" disabled>
-            <label for="ubi">Ubicación 
-              <a href="#" tabindex="0" class="text-decoration-none" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-title="Consejo de Búsqueda" data-bs-content="Puedes usar espacios para buscar múltiples términos. Ej: 'V1 A01 MVC'">
-                <i class="bi bi-info-circle"></i>
+          <div class="input-group">
+            <!-- Texto + icono con popover -->
+            <span class="input-group-text">
+              <a href="#"
+                 class="text-decoration-none"
+                 tabindex="0"
+                 data-bs-toggle="popover"
+                 data-bs-trigger="hover focus"
+                 data-bs-placement="bottom"
+                 data-bs-html="true"
+                 data-bs-title="Consejo de búsqueda"
+                 data-bs-content="Puedes utilizar espacios para separar.<br>Ej: 'V1 A01 MVC'.">
+                <span class="badge rounded-pill text-bg-info">?</span>
               </a>
-            </label>
+              &nbsp;Ubicación
+            </span>
+
+            <!-- Campo de texto -->
+            <input id="ubi"
+                   type="text"
+                   class="form-control"
+                   placeholder="Completa ubicación"
+                   value="T8T-"
+                   aria-label="Ubicación"
+                   disabled>
           </div>
         </div>
+
+        <!-- KKS -->
         <div class="col-md">
           <div class="form-floating">
             <input type="text" class="form-control" id="kks" placeholder="Introduce + 2 letras" disabled>
@@ -70,7 +96,8 @@
           </div>
         </div>
       </div>
-      
+
+      <!-- Resaltar + limpiar -->
       <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="form-check form-switch">
           <input class="form-check-input" type="checkbox" role="switch" id="highlight-criteria" disabled>
@@ -80,14 +107,17 @@
       </div>
     </form>
 
+    <!-- Spinner -->
     <div id="searching-spinner" class="text-center my-4" style="display:none;">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Buscando...</span>
       </div>
     </div>
 
+    <!-- Mensajes -->
     <div id="results-feedback" class="alert" role="alert" style="display:none;"></div>
-    
+
+    <!-- Resultados -->
     <div id="results-container"></div>
   </main>
 
@@ -97,12 +127,12 @@
 
   <!-- jQuery -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  
-  <!-- LÍNEA CORREGIDA: Bootstrap 5.3.2 JS Bundle con el hash de integridad correcto -->
+
+  <!-- Bootstrap 5.3.2 JS Bundle (hash correcto) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
   <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
       let equipos = [];
       let debounceTimer;
 
@@ -114,32 +144,31 @@
       const $feedback = $('#results-feedback');
       const $container = $('#results-container');
       const $clearBtn = $('#clear-button');
-      
-      // Habilitar controles del formulario
+
+      // Habilitar / deshabilitar controles
       const enableForm = (enable) => {
         $('input.form-control, #highlight-criteria, #clear-button').prop('disabled', !enable);
       };
-      
-      // Inicializar Popovers (ahora funcionará porque bootstrap está definido)
-      const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-      popoverTriggerList.map(function (popoverTriggerEl) {
-          return new bootstrap.Popover(popoverTriggerEl);
-      });
 
-      // Cargar los datos del JSON
+      // Iniciar popovers (Bootstrap 5)
+      const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+      popoverTriggerList.map((popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl));
+
+      // Cargar JSON de equipos
       $feedback.removeClass().addClass('alert alert-info').text('Cargando datos de equipos...').show();
       $.getJSON("listado_equipos_mayo_2025.json")
-        .done(function(data) {
+        .done(function (data) {
           equipos = data;
-          enableForm(true); // Habilitar el formulario
+          enableForm(true);
           $feedback.hide();
           $desc.focus();
         })
-        .fail(function() {
+        .fail(function () {
           enableForm(false);
           $feedback.removeClass().addClass('alert alert-danger').text('Error: No se pudo cargar el archivo de datos. Por favor, recarga la página.').show();
         });
 
+      // Búsqueda con debounce
       const performSearch = () => {
         const descripcion = $desc.val().toUpperCase().trim();
         const ubicacion = $ubi.val().toUpperCase().trim();
@@ -149,7 +178,7 @@
           $spinner.show();
           $container.hide();
           $feedback.hide();
-          
+
           setTimeout(() => {
             const resultados = filtrarEquipos(descripcion, ubicacion, kks);
             mostrarResultados(resultados);
@@ -163,11 +192,11 @@
         const descTerms = descripcion.split(' ').filter(Boolean);
         const ubiTerms = ubicacion.split(' ').filter(Boolean);
         const kksTerms = kks.split(' ').filter(Boolean);
-        
-        return equipos.filter(equipo => {
-          const cumpleDescripcion = descripcion.length <= 2 || descTerms.every(term => equipo["Denominación"].toUpperCase().includes(term));
-          const cumpleUbicacion = ubicacion.length <= 4 || ubiTerms.every(term => (equipo["Ubicac.técnica"] || "").toUpperCase().includes(term));
-          const cumpleKks = kks.length <= 2 || kksTerms.every(term => (equipo["NºPieza fabric."] || "").toUpperCase().includes(term));
+
+        return equipos.filter((equipo) => {
+          const cumpleDescripcion = descripcion.length <= 2 || descTerms.every((t) => equipo["Denominación"].toUpperCase().includes(t));
+          const cumpleUbicacion = ubicacion.length <= 4 || ubiTerms.every((t) => (equipo["Ubicac.técnica"] || "").toUpperCase().includes(t));
+          const cumpleKks = kks.length <= 2 || kksTerms.every((t) => (equipo["NºPieza fabric."] || "").toUpperCase().includes(t));
           return cumpleDescripcion && cumpleUbicacion && cumpleKks;
         });
       };
@@ -178,26 +207,27 @@
 
         if (resultados.length > 0) {
           $feedback.removeClass().addClass('alert alert-success').html(`<strong>${resultados.length}</strong> equipos encontrados.`).show();
-          
-          let html = resultados.map(equipo => `
+
+          let html = resultados.map((eq) => `
             <div class="card result-card">
-              <div class="card-header fw-bold">${equipo["Denominación"]}</div>
+              <div class="card-header fw-bold">${eq["Denominación"]}</div>
               <div class="card-body">
-                <p class="mb-1"><strong>Equipo:</strong> ${equipo["Equipo"]}</p>
-                <p class="mb-1"><strong>Ubicación:</strong> ${equipo["Ubicac.técnica"]}</p>
-                ${equipo["NºPieza fabric."] ? `<p class="mb-0"><strong>KKS:</strong> ${equipo["NºPieza fabric."]}</p>` : ''}
+                <p class="mb-1"><strong>Equipo:</strong> ${eq["Equipo"]}</p>
+                <p class="mb-1"><strong>Ubicación:</strong> ${eq["Ubicac.técnica"]}</p>
+                ${eq["NºPieza fabric."] ? `<p class="mb-0"><strong>KKS:</strong> ${eq["NºPieza fabric."]}</p>` : ''}
               </div>
             </div>
           `).join('');
 
+          // Resaltar búsqueda
           if ($highlight.is(':checked')) {
-            const terminos = [...$desc.val().split(' '), ...$kks.val().split(' ')].filter(t => t.length > 2);
-            if (terminos.length > 0) {
+            const terminos = [...$desc.val().split(' '), ...$kks.val().split(' ')].filter((t) => t.length > 2);
+            if (terminos.length) {
               const regex = new RegExp(`(${terminos.join('|')})`, 'gi');
-              html = html.replace(regex, `<mark>$1</mark>`);
+              html = html.replace(regex, '<mark>$1</mark>');
             }
           }
-          
+
           $container.html(html).show();
         } else {
           $feedback.removeClass().addClass('alert alert-warning').html('<strong>Sin resultados.</strong> Prueba con otros criterios de búsqueda.').show();
@@ -217,19 +247,20 @@
         $spinner.hide();
         $desc.focus();
       };
-      
+
+      // Eventos
       $desc.add($ubi).add($kks).on('keyup', () => {
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(performSearch, 300);
       });
-      
+
       $highlight.on('change', performSearch);
-      
       $clearBtn.on('click', limpiarFormulario);
 
-      $ubi.on('input', function() {
+      // Evitar borrar el prefijo T8T-
+      $ubi.on('input', function () {
         if (!this.value.startsWith('T8T-')) {
-            this.value = 'T8T-';
+          this.value = 'T8T-';
         }
       });
     });
