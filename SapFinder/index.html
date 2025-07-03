@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Bootstrap 5.3.2 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
   <title>SapitoFinder 🔍</title>
 
@@ -36,6 +40,7 @@
     mark{background:#fdff85;padding:.1em .2em;border-radius:3px;}
   </style>
 </head>
+
 <body>
   <main class="container p-4 my-4">
     <div class="text-center mb-4">
@@ -61,7 +66,8 @@
         <!-- Ubicación (form-floating + icono) -->
         <div class="col-md">
           <div class="form-floating position-relative has-icon">
-            <input id="ubi" class="form-control" type="text" placeholder="Ubicación" value="T8T-" aria-label="Ubicación" disabled>
+            <input id="ubi" class="form-control" type="text" placeholder="Ubicación"
+                   value="T8T-" aria-label="Ubicación" disabled>
             <label for="ubi">Ubicación</label>
 
             <!-- Icono ayuda -->
@@ -88,12 +94,8 @@
         </div>
       </div>
 
-      <!-- Resaltar criterios + limpiar -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <div class="form-check form-switch">
-          <input id="highlight-criteria" class="form-check-input" type="checkbox" role="switch" disabled>
-          <label class="form-check-label" for="highlight-criteria">Resaltar criterios</label>
-        </div>
+      <!-- Botón limpiar alineado a la derecha -->
+      <div class="mb-3 text-end">
         <button id="clear-button" type="button" class="btn btn-outline-secondary" disabled>Limpiar</button>
       </div>
     </form>
@@ -105,9 +107,8 @@
       </div>
     </div>
 
-    <!-- Mensajes -->
+    <!-- Mensajes y resultados -->
     <div id="results-feedback" class="alert" role="alert" style="display:none;"></div>
-    <!-- Resultados -->
     <div id="results-container"></div>
   </main>
 
@@ -115,7 +116,9 @@
 
   <!-- jQuery + Bootstrap -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+          crossorigin="anonymous"></script>
 
   <script>
     $(function () {
@@ -123,69 +126,97 @@
       let timer;
 
       const $desc = $('#desc'), $ubi = $('#ubi'), $kks = $('#kks');
-      const $highlight = $('#highlight-criteria'), $spinner = $('#searching-spinner');
-      const $feedback = $('#results-feedback'), $container = $('#results-container');
-      const $clear = $('#clear-button');
+      const $spinner = $('#searching-spinner'),
+            $feedback = $('#results-feedback'),
+            $container = $('#results-container'),
+            $clear = $('#clear-button');
 
-      const enableForm = s => $('input.form-control,#highlight-criteria,#clear-button').prop('disabled',!s);
+      /* habilitar / deshabilitar controles */
+      const enableForm = s => $('input.form-control, #clear-button').prop('disabled', !s);
 
       /* popovers */
-      document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el=>new bootstrap.Popover(el));
+      document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => new bootstrap.Popover(el));
 
-      /* Cargar datos */
-      $feedback.addClass('alert alert-info').text('Cargando datos de equipos...').show();
+      /* cargar datos */
+      $feedback.addClass('alert alert-info')
+               .text('Cargando datos de equipos...')
+               .show();
+
       $.getJSON('listado_equipos_mayo_2025.json')
-        .done(d => { equipos=d; enableForm(true); $feedback.hide(); $desc.focus(); })
-        .fail(() => $feedback.removeClass().addClass('alert alert-danger').text('Error cargando datos.'));
+        .done(data => { equipos = data; enableForm(true); $feedback.hide(); $desc.focus(); })
+        .fail(()  => { $feedback.removeClass().addClass('alert alert-danger')
+                             .text('Error cargando datos.'); });
 
-      /* --------- búsqueda --------- */
+      /* -------- búsqueda -------- */
       const filtrar = (d,u,k) => {
-        const dT=d.split(' ').filter(Boolean), uT=u.split(' ').filter(Boolean), kT=k.split(' ').filter(Boolean);
-        return equipos.filter(eq=>{
-          const okD=d.length<=2||dT.every(t=>eq['Denominación'].toUpperCase().includes(t));
-          const okU=u.length<=4||uT.every(t=>(eq['Ubicac.técnica']||'').toUpperCase().includes(t));
-          const okK=k.length<=2||kT.every(t=>(eq['NºPieza fabric.']||'').toUpperCase().includes(t));
-          return okD&&okU&&okK;
+        const dT = d.split(' ').filter(Boolean),
+              uT = u.split(' ').filter(Boolean),
+              kT = k.split(' ').filter(Boolean);
+        return equipos.filter(eq => {
+          const okD = d.length<=2 || dT.every(t => eq['Denominación'].toUpperCase().includes(t));
+          const okU = u.length<=4 || uT.every(t => (eq['Ubicac.técnica']||'').toUpperCase().includes(t));
+          const okK = k.length<=2 || kT.every(t => (eq['NºPieza fabric.']||'').toUpperCase().includes(t));
+          return okD && okU && okK;
         });
+      };
+
+      const resaltar = (html) => {
+        const terms = [...$desc.val().split(' '), ...$kks.val().split(' ')].filter(t => t.length > 2);
+        if (!terms.length) return html;
+        const rg = new RegExp(`(${terms.join('|')})`, 'gi');
+        return html.replace(rg, '<mark>$1</mark>');
       };
 
       const mostrar = (res) => {
         $spinner.hide(); $container.empty().hide(); $feedback.hide();
-        if(!res.length){
-          $feedback.removeClass().addClass('alert alert-warning').html('<strong>Sin resultados.</strong>').show();
+
+        if (!res.length) {
+          $feedback.removeClass().addClass('alert alert-warning')
+                   .html('<strong>Sin resultados.</strong>')
+                   .show();
           return;
         }
-        $feedback.removeClass().addClass('alert alert-success').html(`<strong>${res.length}</strong> equipos encontrados.`).show();
-        let html = res.map(eq=>`
+
+        $feedback.removeClass().addClass('alert alert-success')
+                 .html(`<strong>${res.length}</strong> equipos encontrados.`)
+                 .show();
+
+        let html = res.map(eq => `
           <div class="card result-card">
             <div class="card-header fw-bold">${eq['Denominación']}</div>
             <div class="card-body">
               <p class="mb-1"><strong>Equipo:</strong> ${eq['Equipo']}</p>
               <p class="mb-1"><strong>Ubicación:</strong> ${eq['Ubicac.técnica']}</p>
-              ${eq['NºPieza fabric.']?`<p class="mb-0"><strong>KKS:</strong> ${eq['NºPieza fabric.']}</p>`:''}
+              ${eq['NºPieza fabric.'] ? `<p class="mb-0"><strong>KKS:</strong> ${eq['NºPieza fabric.']}</p>` : ''}
             </div>
           </div>`).join('');
 
-        if($highlight.is(':checked')){
-          const terms=[...$desc.val().split(' '),...$kks.val().split(' ')].filter(t=>t.length>2);
-          if(terms.length){ const rg=new RegExp(`(${terms.join('|')})`,'gi'); html=html.replace(rg,'<mark>$1</mark>'); }
-        }
-        $container.html(html).show();
+        $container.html(resaltar(html)).show();
       };
 
       const buscar = () => {
-        const d=$desc.val().toUpperCase().trim(), u=$ubi.val().toUpperCase().trim(), k=$kks.val().toUpperCase().trim();
-        if(d.length>2||u.length>4||k.length>2){
-          $spinner.show();clearTimeout(timer);
-          timer=setTimeout(()=>mostrar(filtrar(d,u,k)),250);
-        }else{ $container.empty().hide(); $feedback.hide(); }
+        const d=$desc.val().toUpperCase().trim(),
+              u=$ubi.val().toUpperCase().trim(),
+              k=$kks.val().toUpperCase().trim();
+
+        if (d.length > 2 || u.length > 4 || k.length > 2) {
+          $spinner.show(); clearTimeout(timer);
+          timer = setTimeout(() => mostrar(filtrar(d,u,k)), 250);
+        } else {
+          $container.empty().hide(); $feedback.hide();
+        }
       };
 
-      $desc.add($ubi).add($kks).on('keyup',buscar);
-      $highlight.on('change',buscar);
-      $clear.on('click',()=>{ $desc.val('');$ubi.val('T8T-');$kks.val('');$feedback.hide();$container.empty().hide(); });
+      /* eventos */
+      $desc.add($ubi).add($kks).on('keyup', buscar);
+      $clear.on('click', () => {
+        $desc.val(''); $ubi.val('T8T-'); $kks.val('');
+        $container.empty().hide(); $feedback.hide(); $spinner.hide();
+        $desc.focus();
+      });
 
-      $ubi.on('input',function(){ if(!this.value.startsWith('T8T-')) this.value='T8T-'; });
+      /* proteger prefijo T8T- */
+      $ubi.on('input', function () { if (!this.value.startsWith('T8T-')) this.value = 'T8T-'; });
     });
   </script>
 </body>
