@@ -4,79 +4,69 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap 5.3.2 CSS -->
+  <!-- Bootstrap 5.3.2 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <!-- Iconos de Bootstrap -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
   <title>SapitoFinder 🔍</title>
 
   <style>
-    body { background-color: #f8f9fa; }
-    main.container {
-      max-width: 800px;
-      background-color: #fff;
-      border-radius: 0.5rem;
-      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.1);
+    body { background:#f8f9fa; }
+    main.container{
+      max-width:800px;background:#fff;border-radius:.5rem;
+      box-shadow:0 0.5rem 1rem rgba(0,0,0,.1);
     }
-    .popover-header { font-weight: bold; }
 
-    /* Tarjetas de resultados */
-    #results-container { display: grid; gap: .75rem; }
-    .result-card {
-      border: none;
-      box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
-      transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+    /* ---------- ajuste del input con icono ---------- */
+    .form-floating.has-icon > .form-control{ padding-left:3rem; }
+    .form-floating.has-icon > label        { left:3rem; }
+    .form-floating.has-icon .icon-help{
+      position:absolute;left:.75rem;top:50%;transform:translateY(-50%);
     }
-    .result-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
-    }
-    .result-card:nth-child(odd) .card-header { background-color:#0d6efd; color:#fff; }
-    .result-card:nth-child(even) .card-header{ background-color:#6c757d; color:#fff; }
 
-    mark { background-color:#fdff85; padding:0.1em 0.2em; border-radius:3px; }
+    /* ---------- tarjetas de resultados ---------- */
+    #results-container{ display:grid;gap:.75rem; }
+    .result-card{border:none;box-shadow:0 .125rem .25rem rgba(0,0,0,.075);
+                 transition:transform .2s,box-shadow .2s;}
+    .result-card:hover{transform:translateY(-3px);
+                       box-shadow:0 .5rem 1rem rgba(0,0,0,.1);}
+    .result-card:nth-child(odd)  .card-header{background:#0d6efd;color:#fff;}
+    .result-card:nth-child(even) .card-header{background:#6c757d;color:#fff;}
+
+    mark{background:#fdff85;padding:.1em .2em;border-radius:3px;}
   </style>
 </head>
-
 <body>
   <main class="container p-4 my-4">
     <div class="text-center mb-4">
       <h1 class="display-5 d-inline-flex align-items-center">
         SapitoFinder
-        <img src="android-chrome-192x192.png" alt="Icono SapitoFinder" style="height:6rem;margin-left:.75rem;">
+        <img src="android-chrome-192x192.png" alt="Icono SapitoFinder" style="height:6rem;margin-left:.75rem">
       </h1>
       <p class="lead text-muted">Buscador de equipos y componentes</p>
     </div>
 
-    <!-- ========= FORMULARIO ========= -->
+    <!-- ========== FORMULARIO ========== -->
     <form id="search-form" onsubmit="return false;">
       <div class="row g-2 mb-3">
 
         <!-- Descripción -->
         <div class="col-md">
           <div class="form-floating">
-            <input type="text" class="form-control" id="desc" placeholder="Descripción" disabled>
+            <input id="desc" class="form-control" type="text" placeholder="Descripción" disabled>
             <label for="desc">Descripción</label>
           </div>
         </div>
 
         <!-- Ubicación (form-floating + icono) -->
         <div class="col-md">
-          <div class="form-floating position-relative">
-            <input type="text"
-                   class="form-control ps-5"
-                   id="ubi"
-                   placeholder="Ubicación"
-                   value="T8T-"
-                   aria-label="Ubicación"
-                   disabled>
-
+          <div class="form-floating position-relative has-icon">
+            <input id="ubi" class="form-control" type="text" placeholder="Ubicación" value="T8T-" aria-label="Ubicación" disabled>
             <label for="ubi">Ubicación</label>
 
-            <!-- Icono de ayuda -->
+            <!-- Icono ayuda -->
             <a href="#"
-               class="position-absolute top-50 start-0 translate-middle-y ms-3 text-decoration-none"
+               class="icon-help text-decoration-none"
                tabindex="0"
                data-bs-toggle="popover"
                data-bs-trigger="hover focus"
@@ -89,19 +79,19 @@
           </div>
         </div>
 
-        <!-- KKS / Nº Pieza -->
+        <!-- KKS -->
         <div class="col-md">
           <div class="form-floating">
-            <input type="text" class="form-control" id="kks" placeholder="KKS" disabled>
+            <input id="kks" class="form-control" type="text" placeholder="KKS / Nº Pieza" disabled>
             <label for="kks">KKS / Nº Pieza</label>
           </div>
         </div>
       </div>
 
-      <!-- Resaltar criterios + botón limpiar -->
+      <!-- Resaltar criterios + limpiar -->
       <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="highlight-criteria" disabled>
+          <input id="highlight-criteria" class="form-check-input" type="checkbox" role="switch" disabled>
           <label class="form-check-label" for="highlight-criteria">Resaltar criterios</label>
         </div>
         <button id="clear-button" type="button" class="btn btn-outline-secondary" disabled>Limpiar</button>
@@ -115,163 +105,87 @@
       </div>
     </div>
 
-    <!-- Mensajes y resultados -->
+    <!-- Mensajes -->
     <div id="results-feedback" class="alert" role="alert" style="display:none;"></div>
+    <!-- Resultados -->
     <div id="results-container"></div>
   </main>
 
-  <footer class="text-center text-muted py-3">
-    <small>©FQR©</small>
-  </footer>
+  <footer class="text-center text-muted py-3"><small>©FQR©</small></footer>
 
-  <!-- jQuery -->
+  <!-- jQuery + Bootstrap -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
   <script>
     $(function () {
       let equipos = [];
-      let debounceTimer;
+      let timer;
 
-      const $desc = $('#desc');
-      const $ubi  = $('#ubi');
-      const $kks  = $('#kks');
-      const $highlight = $('#highlight-criteria');
-      const $spinner   = $('#searching-spinner');
-      const $feedback  = $('#results-feedback');
-      const $container = $('#results-container');
-      const $clearBtn  = $('#clear-button');
+      const $desc = $('#desc'), $ubi = $('#ubi'), $kks = $('#kks');
+      const $highlight = $('#highlight-criteria'), $spinner = $('#searching-spinner');
+      const $feedback = $('#results-feedback'), $container = $('#results-container');
+      const $clear = $('#clear-button');
 
-      // Habilita / deshabilita los controles
-      const enableForm = (state) => {
-        $('input.form-control, #highlight-criteria, #clear-button').prop('disabled', !state);
-      };
+      const enableForm = s => $('input.form-control,#highlight-criteria,#clear-button').prop('disabled',!s);
 
-      // Iniciar popovers (Bootstrap 5)
-      [...document.querySelectorAll('[data-bs-toggle="popover"]')]
-        .forEach(el => new bootstrap.Popover(el));
+      /* popovers */
+      document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el=>new bootstrap.Popover(el));
 
-      // Cargar JSON
-      $feedback.removeClass().addClass('alert alert-info')
-               .text('Cargando datos de equipos...').show();
-
+      /* Cargar datos */
+      $feedback.addClass('alert alert-info').text('Cargando datos de equipos...').show();
       $.getJSON('listado_equipos_mayo_2025.json')
-        .done(data => {
-          equipos = data;
-          enableForm(true);
-          $feedback.hide();
-          $desc.focus();
-        })
-        .fail(() => {
-          enableForm(false);
-          $feedback.removeClass().addClass('alert alert-danger')
-                   .text('Error: No se pudo cargar el archivo de datos. Por favor, recarga la página.')
-                   .show();
+        .done(d => { equipos=d; enableForm(true); $feedback.hide(); $desc.focus(); })
+        .fail(() => $feedback.removeClass().addClass('alert alert-danger').text('Error cargando datos.'));
+
+      /* --------- búsqueda --------- */
+      const filtrar = (d,u,k) => {
+        const dT=d.split(' ').filter(Boolean), uT=u.split(' ').filter(Boolean), kT=k.split(' ').filter(Boolean);
+        return equipos.filter(eq=>{
+          const okD=d.length<=2||dT.every(t=>eq['Denominación'].toUpperCase().includes(t));
+          const okU=u.length<=4||uT.every(t=>(eq['Ubicac.técnica']||'').toUpperCase().includes(t));
+          const okK=k.length<=2||kT.every(t=>(eq['NºPieza fabric.']||'').toUpperCase().includes(t));
+          return okD&&okU&&okK;
         });
+      };
 
-      // ---------- Lógica de búsqueda ----------
-      const performSearch = () => {
-        const descripcion = $desc.val().toUpperCase().trim();
-        const ubicacion   = $ubi.val().toUpperCase().trim();
-        const kks         = $kks.val().toUpperCase().trim();
-
-        if (descripcion.length > 2 || ubicacion.length > 4 || kks.length > 2) {
-          $spinner.show();
-          $container.hide();
-          $feedback.hide();
-
-          setTimeout(() => {
-            const resultados = filtrarEquipos(descripcion, ubicacion, kks);
-            mostrarResultados(resultados);
-          }, 250);
-        } else {
-          limpiarResultados();
+      const mostrar = (res) => {
+        $spinner.hide(); $container.empty().hide(); $feedback.hide();
+        if(!res.length){
+          $feedback.removeClass().addClass('alert alert-warning').html('<strong>Sin resultados.</strong>').show();
+          return;
         }
-      };
-
-      const filtrarEquipos = (descripcion, ubicacion, kks) => {
-        const descTerms = descripcion.split(' ').filter(Boolean);
-        const ubiTerms  = ubicacion.split(' ').filter(Boolean);
-        const kksTerms  = kks.split(' ').filter(Boolean);
-
-        return equipos.filter(eq => {
-          const okDesc = descripcion.length <= 2 ||
-                         descTerms.every(t => eq['Denominación'].toUpperCase().includes(t));
-
-          const okUbi  = ubicacion.length <= 4 ||
-                         ubiTerms.every(t => (eq['Ubicac.técnica'] || '').toUpperCase().includes(t));
-
-          const okKks  = kks.length <= 2 ||
-                         kksTerms.every(t => (eq['NºPieza fabric.'] || '').toUpperCase().includes(t));
-
-          return okDesc && okUbi && okKks;
-        });
-      };
-
-      const mostrarResultados = (resultados) => {
-        $spinner.hide();
-        limpiarResultados();
-
-        if (resultados.length) {
-          $feedback.removeClass().addClass('alert alert-success')
-                   .html(`<strong>${resultados.length}</strong> equipos encontrados.`).show();
-
-          let html = resultados.map(eq => `
-            <div class="card result-card">
-              <div class="card-header fw-bold">${eq['Denominación']}</div>
-              <div class="card-body">
-                <p class="mb-1"><strong>Equipo:</strong> ${eq['Equipo']}</p>
-                <p class="mb-1"><strong>Ubicación:</strong> ${eq['Ubicac.técnica']}</p>
-                ${eq['NºPieza fabric.'] ? `<p class="mb-0"><strong>KKS:</strong> ${eq['NºPieza fabric.']}</p>` : ''}
-              </div>
+        $feedback.removeClass().addClass('alert alert-success').html(`<strong>${res.length}</strong> equipos encontrados.`).show();
+        let html = res.map(eq=>`
+          <div class="card result-card">
+            <div class="card-header fw-bold">${eq['Denominación']}</div>
+            <div class="card-body">
+              <p class="mb-1"><strong>Equipo:</strong> ${eq['Equipo']}</p>
+              <p class="mb-1"><strong>Ubicación:</strong> ${eq['Ubicac.técnica']}</p>
+              ${eq['NºPieza fabric.']?`<p class="mb-0"><strong>KKS:</strong> ${eq['NºPieza fabric.']}</p>`:''}
             </div>
-          `).join('');
+          </div>`).join('');
 
-          // Resaltar términos
-          if ($highlight.is(':checked')) {
-            const terminos = [...$desc.val().split(' '), ...$kks.val().split(' ')].filter(t => t.length > 2);
-            if (terminos.length) {
-              const rg = new RegExp(`(${terminos.join('|')})`, 'gi');
-              html = html.replace(rg, '<mark>$1</mark>');
-            }
-          }
-
-          $container.html(html).show();
-        } else {
-          $feedback.removeClass().addClass('alert alert-warning')
-                   .html('<strong>Sin resultados.</strong> Prueba con otros criterios de búsqueda.')
-                   .show();
+        if($highlight.is(':checked')){
+          const terms=[...$desc.val().split(' '),...$kks.val().split(' ')].filter(t=>t.length>2);
+          if(terms.length){ const rg=new RegExp(`(${terms.join('|')})`,'gi'); html=html.replace(rg,'<mark>$1</mark>'); }
         }
+        $container.html(html).show();
       };
 
-      const limpiarResultados = () => {
-        $container.empty().hide();
-        $feedback.hide();
+      const buscar = () => {
+        const d=$desc.val().toUpperCase().trim(), u=$ubi.val().toUpperCase().trim(), k=$kks.val().toUpperCase().trim();
+        if(d.length>2||u.length>4||k.length>2){
+          $spinner.show();clearTimeout(timer);
+          timer=setTimeout(()=>mostrar(filtrar(d,u,k)),250);
+        }else{ $container.empty().hide(); $feedback.hide(); }
       };
 
-      const limpiarFormulario = () => {
-        $desc.val('');
-        $ubi.val('T8T-');
-        $kks.val('');
-        limpiarResultados();
-        $spinner.hide();
-        $desc.focus();
-      };
+      $desc.add($ubi).add($kks).on('keyup',buscar);
+      $highlight.on('change',buscar);
+      $clear.on('click',()=>{ $desc.val('');$ubi.val('T8T-');$kks.val('');$feedback.hide();$container.empty().hide(); });
 
-      // ---------- Eventos ----------
-      $desc.add($ubi).add($kks).on('keyup', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(performSearch, 300);
-      });
-
-      $highlight.on('change', performSearch);
-      $clearBtn.on('click', limpiarFormulario);
-
-      // Impedir borrar prefijo T8T-
-      $ubi.on('input', function () {
-        if (!this.value.startsWith('T8T-')) this.value = 'T8T-';
-      });
+      $ubi.on('input',function(){ if(!this.value.startsWith('T8T-')) this.value='T8T-'; });
     });
   </script>
 </body>
