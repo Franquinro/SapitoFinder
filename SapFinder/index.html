@@ -53,11 +53,15 @@
             <label for="desc">Descripción</label>
           </div>
         </div>
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" id="inputGroup-sizing-default"><a href="#" title="Consejo" data-toggle="popover" data-placement="bottom" data-html="true" data-content="Puedes utilizar espacios para separar.<br>Ej. 'V1 A01 MVC'."><span class="badge badge-pill badge-info">?</span></a>&nbsp;Ubicación</span>
+        <div class="col-md">
+          <div class="form-floating">
+            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-" disabled>
+            <label for="ubi">Ubicación 
+              <a href="#" tabindex="0" class="text-decoration-none" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-title="Consejo de Búsqueda" data-bs-content="Puedes usar espacios para buscar múltiples términos. Ej: 'V1 A01 MVC'">
+                <i class="bi bi-info-circle"></i>
+              </a>
+            </label>
           </div>
-          <input id="ubi" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="Completa ubicación" value="T8T-">
         </div>
         <div class="col-md">
           <div class="form-floating">
