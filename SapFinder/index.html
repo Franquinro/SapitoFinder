@@ -53,12 +53,20 @@
             <label for="desc">Descripción</label>
           </div>
         </div>
+        <!-- Input Ubicación (CORREGIDO) -->
         <div class="col-md">
           <div class="form-floating">
-            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-" disabled>
+            <input type="text" class="form-control" id="ubi" placeholder="Completa ubicación" value="T8T-">
             <label for="ubi">Ubicación 
-              <a href="#" tabindex="0" class="text-decoration-none" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-title="Consejo de Búsqueda" data-bs-content="Puedes usar espacios para buscar múltiples términos. Ej: 'V1 A01 MVC'">
-                <i class="bi bi-info-circle"></i>
+              <!-- Aquí está la clave: se usan los atributos data-bs-* -->
+              <a href="#" 
+                 tabindex="0" 
+                 class="text-decoration-none" 
+                 data-bs-toggle="popover" <!-- ATRIBUTO CAMBIADO -->
+                 data-bs-trigger="hover focus" <!-- ATRIBUTO CAMBIADO -->
+                 data-bs-title="Consejo de Búsqueda" <!-- ATRIBUTO CAMBIADO -->
+                 data-bs-content="Puedes utilizar espacios para separar. Ej. 'V1 A01 MVC'">
+                <i class="bi bi-info-circle"></i> <!-- Usamos un icono de Bootstrap en lugar de un badge -->
               </a>
             </label>
           </div>
