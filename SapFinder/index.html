@@ -14,11 +14,30 @@
 
   <title>SapitoFinder 🔍</title>
 
+  <!-- ========== FUENTE Practicum LD ========== -->
+  <style>
+    @font-face {
+      font-family: "Practicum LD";
+      src: url("awesome/webfonts/Practicum_LD.ttf") format("truetype");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+  </style>
+
   <style>
     body { background:#f8f9fa; }
     main.container{
       max-width:800px;background:#fff;border-radius:.5rem;
       box-shadow:0 0.5rem 1rem rgba(0,0,0,.1);
+    }
+
+    /* ---------- marca SAP ---------- */
+    .sap-logo {
+      font-family:"Practicum LD","Helvetica Neue",Helvetica,Arial,sans-serif;
+      color:#2CB0FD;
+      font-weight:700;
+      letter-spacing:.02em;
     }
 
     /* ---------- ajuste del input con icono ---------- */
@@ -44,9 +63,12 @@
 <body>
   <main class="container p-4 my-4">
     <div class="text-center mb-4">
-      <h1 class="display-5 d-inline-flex align-items-center">
-        SapitoFinder
-        <img src="android-chrome-192x192.png" alt="Icono SapitoFinder" style="height:6rem;margin-left:.75rem">
+      <h1 class="display-5 d-inline-flex align-items-center gap-1">
+        <!-- SAP en mayúsculas con la fuente Practicum LD y el color corporativo -->
+        <span class="sap-logo">SAP</span>itoFinder
+        <img src="android-chrome-192x192.png"
+             alt="Icono SapitoFinder"
+             style="height:6rem;margin-left:.75rem">
       </h1>
       <p class="lead text-muted">Buscador de equipos y componentes</p>
     </div>
